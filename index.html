@@ -111,12 +111,8 @@
     }
 
   textarea.value = "";
+    switchView('feed', document.querySelectorAll('.nav-item')[0]);
     alert("Tu sueño ha sido destilado en frecuencia abstracta de forma segura.");
-    
-    // Forzamos el cambio de vista llamando directamente al botón del Feed de manera nativa
-    const navItems = document.querySelectorAll('.nav-item');
-    if (navItems && navItems.length > 0) {
-        navItems[0].click();
     }
 
 </script>
