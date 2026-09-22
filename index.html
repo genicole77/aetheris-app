@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheris - Red de Consciencia</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+  <header>
+    <h1>A E T H E R I S</h1>
+    <p>El Santuario de la Consciencia Colectiva</p>
+  </header>
+
+  <main>
+    <!-- VISTA 1: EL FEED LÚCIDO -->
+    <section id="feed-view" class="view active">
+      <div class="card">
+        <div class="card-title">✨ Pulso Colectivo</div>
+        <p class="card-desc">Explora las frecuencias abstractas del subconsciente global.</p>
+        <div style="height: 180px; background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(56,189,248,0.1)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.1);">
+          [Portal Visual de Sueño #4092]
+        </div>
+        <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Nostalgia 🌊</span>
+          <button style="width: auto; padding: 6px 12px; font-size: 0.8rem;">Resonar ✨</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISTA 2: EL ORÁCULO (CREAR SUEÑO) -->
+    <section id="create-view" class="view">
+      <div class="card">
+        <div class="card-title">🌀 Canalizar Sueño / Pensamiento</div>
+        <p class="card-desc">Escribe lo que experimentaste al despertar. Tu texto puro se cifrará en tu santuario; solo la esencia artística viajará al feed.</p>
+        <textarea rows="4" placeholder="Anoche soñé que caminaba por un puente de cristal hecho de estrellas..."></textarea>
+        <button style="margin-top: 15px;" onclick="alert('Tu sueño ha sido destilado en frecuencia abstracta de forma segura.')">Transformar en Arte 🌌</button>
+      </div>
+    </section>
+
+    <!-- VISTA 3: EL SANTUARIO PERSONAL -->
+    <section id="sanctuary-view" class="view">
+      <div class="card">
+        <div class="card-title">🛡️ Tu Santuario Privado</div>
+        <p class="card-desc">Tu archivo íntimo de sueños y evolución emocional.</p>
+        <div style="padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 10px;">
+          <strong style="font-size: 0.9rem; color: var(--accent);">ViajeroDeLuz#77</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Estado: Introspectivo y Sereno</p>
+        </div>
+        <button style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">Ver mi Diario Secreto 📖</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- BARRA DE NAVEGACIÓN -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchView('feed', this)">
+      <span class="icon">🌌</span>
+      <span>Feed</span>
+    </button>
+    <button class="nav-item" onclick="switchView('create', this)">
+      <span class="icon">✨</span>
+      <span>Oráculo</span>
+    </button>
+    <button class="nav-item" onclick="switchView('sanctuary', this)">
+      <span class="icon">🛡️</span>
+      <span>Santuario</span>
+    </button>
+  </nav>
+
+  <script>
+    function switchView(viewName, element) {
+      // Ocultar vistas
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      // Desactivar botones
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      // Mostrar vista seleccionada
+      if(viewName === 'feed') document.getElementById('feed-view').classList.add('active');
+      if(viewName === 'create') document.getElementById('create-view').classList.add('active');
+      if(viewName === 'sanctuary') document.getElementById('sanctuary-view').classList.add('active');
+      
+      // Activar botón
+      element.classList.add('active');
+    }
+  </script>
+</body>
+</html>
