@@ -36,7 +36,7 @@
         <div class="card-title">🌀 Canalizar Sueño / Pensamiento</div>
         <p class="card-desc">Escribe lo que experimentaste al despertar. Tu texto puro se cifrará en tu santuario; solo la esencia artística viajará al feed.</p>
         <textarea rows="4" placeholder="Anoche soñé que caminaba por un puente de cristal hecho de estrellas..."></textarea>
-        <button style="margin-top: 15px;" onclick="alert('Tu sueño ha sido destilado en frecuencia abstracta de forma segura.')">Transformar en Arte 🌌</button>
+        <button style="margin-top: 15px;" onclick="transformarSueno()">Transformar en Arte 🌌</button>
       </div>
     </section>
 
@@ -85,6 +85,35 @@
       // Activar botón
       element.classList.add('active');
     }
-  </script>
+  function transformarSueno() {
+    const textarea = document.querySelector('#create-view textarea');
+    const textoSueno = textarea ? textarea.value.trim() : "";
+    
+    if (!textoSueno) {
+        alert("Por favor escribe tu sueño o pensamiento primero.");
+        return;
+    }
+
+    const feedView = document.querySelector('#feed-view');
+    if (feedView) {
+        const nuevaTarjeta = document.createElement('div');
+        nuevaTarjeta.className = 'card';
+        nuevaTarjeta.style.marginTop = '15px';
+        nuevaTarjeta.innerHTML = `
+            <div class="card-title">✨ Canalización Reciente</div>
+            <div class="card-desc">${textoSueno}</div>
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Revelación 🌊</span>
+                <button style="width: auto; padding: 6px 12px; font-size: 0.8rem;">Resonar ✨</button>
+            </div>
+        `;
+        feedView.insertBefore(nuevaTarjeta, feedView.children[1]);
+    }
+
+    textarea.value = "";
+    alert("Tu sueño ha sido destilado en frecuencia abstracta de forma segura.");
+    switchView('feed', document.querySelector('.nav-item'));
+}
+</script>
 </body>
 </html>
