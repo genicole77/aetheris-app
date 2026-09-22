@@ -1,14 +1,16 @@
 {
   "name": "Aetheris - Consciencia y Sueños",
   "short_name": "Aetheris",
-  "start_url": "/index.html",
+  "description": "El Santuario de la Consciencia Colectiva y Sueños Anónimos.",
+  "start_url": "/aetheris-app/",
+  "scope": "/aetheris-app/",
   "display": "standalone",
   "background_color": "#05050a",
   "theme_color": "#8b5cf6",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-512.png",
+      "src": "https://genicole77.github.io/aetheris-app/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
