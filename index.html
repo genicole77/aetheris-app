@@ -102,12 +102,22 @@
         nuevaTarjeta.innerHTML = `
             <div class="card-title">✨ Canalización Reciente</div>
             <div class="card-desc">${textoSueno}</div>
+            
+            <!-- CONTENEDOR DEL PORTAL VISUAL -->
+            <div class="portal-visual-container" style="margin-top: 15px; position: relative; width: 100%; height: 200px; border-radius: 12px; overflow: hidden; background: linear-gradient(45deg, #1a0536, #310869, #1a0536); box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid var(--secondary-low); display: flex; align-items: center; justify-content: center;">
+                <span style="color: #fff; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--secondary); animation: portalPulse 2s infinite;">
+                    ⚡ VISUALIZANDO ⚡
+                </span>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 60%, rgba(49, 8, 105, 0.2) 100%); pointer-events: none;"></div>
+            </div>
+
             <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Revelación 🌊</span>
-                <button style="width: auto; padding: 6px 12px; font-size: 0.8rem;">Resonar ✨</button>
+                <button class="resonar-btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(90deg, var(--primary), var(--secondary)); border: none; color: white; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Resonar ✨</button>
             </div>
         `;
         feedView.insertBefore(nuevaTarjeta, feedView.children[1]);
+    }
     }
 
   textarea.value = "";
