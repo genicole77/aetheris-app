@@ -103,12 +103,11 @@
             <div class="card-title">✨ Canalización Reciente</div>
             <div class="card-desc">${textoSueno}</div>
             
-            <!-- CONTENEDOR DEL PORTAL VISUAL -->
-            <div class="portal-visual-container" style="margin-top: 15px; position: relative; width: 100%; height: 200px; border-radius: 12px; overflow: hidden; background: linear-gradient(45deg, #1a0536, #310869, #1a0536); box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid var(--secondary-low); display: flex; align-items: center; justify-content: center;">
-                <span style="color: #fff; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--secondary); animation: portalPulse 2s infinite;">
-                    ⚡ VISUALIZANDO ⚡
-                </span>
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 60%, rgba(49, 8, 105, 0.2) 100%); pointer-events: none;"></div>
+            <!-- CONTENEDOR DEL PORTAL VISUAL DINÁMICO -->
+            <div class="portal-visual-container" style="margin-top: 15px; position: relative; width: 100%; height: 200px; border-radius: 12px; overflow: hidden; background: linear-gradient(45deg, #1a0536, #310869, #1a0536); box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid var(--secondary-low); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center;">
+                <span style="color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--secondary); margin-bottom: 8px;">⚡ FRECUENCIA CAPTURADA ⚡</span>
+                <p style="color: #e0d4fc; font-size: 0.85rem; margin: 0; font-style: italic;">"${textoSueno}"</p>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 60%, rgba(49, 8, 105, 0.3) 100%); pointer-events: none;"></div>
             </div>
 
             <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
@@ -118,7 +117,8 @@
         `;
         feedView.insertBefore(nuevaTarjeta, feedView.children[1]);
     }
-    }
+    
+    
 
   textarea.value = "";
     switchView('feed', document.querySelectorAll('.nav-item')[0]);
