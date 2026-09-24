@@ -94,7 +94,7 @@
         return;
     }
 
-  const feedView = document.querySelector('#feed-view');
+const feedView = document.querySelector('#feed-view');
 
     // 1. Recuperamos los sueños guardados o inicializamos array vacío
     let sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
@@ -116,13 +116,13 @@
     sueñosGuardados.unshift(nuevoSueño);
     localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
 
-    // 5. Renderizamos la tarjeta con múltiples imágenes
+    // 5. Renderizamos la tarjeta nueva con la galería de 3 imágenes
     const nuevaTarjeta = document.createElement('div');
     nuevaTarjeta.className = 'card';
     nuevaTarjeta.style.marginTop = '15px';
 
     nuevaTarjeta.innerHTML = `
-        <div class="card-title">✨ Canalización Reciente</div>
+        <div class="card-title">✨ Canalización del ${nuevoSueño.fecha}</div>
         <div class="card-desc">${textoSueno}</div>
         
         <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
@@ -148,8 +148,10 @@
     textarea.value = "";
     document.querySelector('#oraculo-view').style.display = 'none';
     feedView.style.display = 'block';
+}
 
-   window.addEventListener('DOMContentLoaded', () => {
+// 6. Cargar automáticamente los sueños guardados al abrir la aplicación
+window.addEventListener('DOMContentLoaded', () => {
     const feedView = document.querySelector('#feed-view');
     let sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
     
@@ -180,5 +182,7 @@
             </div>
         `;
         feedView.appendChild(tarjetaGuardada);
+    });
+});
     });
 });
