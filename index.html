@@ -85,43 +85,45 @@
       // Activar botón
       element.classList.add('active');
     }
-  function transformarSueno() {
+ function transformarSueno() {
     const textarea = document.querySelector('#create-view textarea');
     const textoSueno = textarea ? textarea.value.trim() : "";
-    
+
     if (!textoSueno) {
         alert("Por favor escribe tu sueño o pensamiento primero.");
         return;
     }
 
-   const feedView = document.querySelector('#feed-view');
+    const feedView = document.querySelector('#feed-view');
 
-        const nuevaTarjeta = document.createElement('div');
-        nuevaTarjeta.className = 'card';
-        nuevaTarjeta.style.marginTop = '15px';
+    const nuevaTarjeta = document.createElement('div');
+    nuevaTarjeta.className = 'card';
+    nuevaTarjeta.style.marginTop = '15px';
 
-        // URL provisional para la imagen abstracta del sueño
-        const imageUrl = "https://picsum.photos/800/450?random=" + Date.now();
+    // URL provisional para la imagen abstracta del sueño
+    const imageUrl = "https://picsum.photos/800/450?random=" + Date.now();
 
-        nuevaTarjeta.innerHTML = `
-            <div class="card-title">✨ Canalización Reciente</div>
-            <div class="card-desc">${textoSueno}</div>
+    nuevaTarjeta.innerHTML = `
+        <div class="card-title">✨ Canalización Reciente</div>
+        <div class="card-desc">${textoSueno}</div>
 
-            <!-- CONTENEDOR DE LA IMAGEN DEL SUEÑO -->
-            <div class="portal-image-container" style="margin-top: 15px; width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid var(--secondary); box-shadow: 0 0 20px rgba(49, 8, 105, 0.5);">
-                <img src="${imageUrl}" alt="Visualización del Sueño" style="width: 100%; height: auto; display: block; object-fit: cover;">
-            </div>
+        <!-- CONTENEDOR DE LA IMAGEN DEL SUEÑO -->
+        <div class="portal-image-container" style="margin-top: 15px; width: 100%; border-radius: 12px; overflow: hidden;">
+            <img src="${imageUrl}" alt="Visualización del Sueño" style="width: 100%; height: auto; display: block;">
+        </div>
 
-            <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Revelación 🌊</span>
-                <button class="resonar-btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(90deg, var(--primary), var(--secondary)); border: none; color: white; border-radius: 4px; cursor: pointer;">Resonar ✨</button>
-            </div>
-        `;
-        feedView.insertBefore(nuevaTarjeta, feedView.children[1]);
+        <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Revelación 🌊</span>
+            <button class="resonar-btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(56,189,248,0.3)); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px;">Resonar ✨</button>
+        </div>
+    `;
 
-        textarea.value = "";
-        switchView('feed', document.querySelectorAll('.nav-item')[0]);
-        alert("Tu sueño ha sido destilado en frecuencia abstracta de forma segura.");
+    feedView.insertBefore(nuevaTarjeta, feedView.children[1]);
+
+    textarea.value = "";
+    switchView('feed', document.querySelectorAll('.nav-item')[0]);
+    alert("Tu sueño ha sido destilado en frecuencia abstracta de forma segura.");
+}
 </script>
 </body>
 </html>
