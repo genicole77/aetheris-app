@@ -9,6 +9,52 @@
 </head>
 <body>
 
+ <script>
+    function procesarAutenticacion() {
+        var correoInput = document.getElementById('auth-username').value.trim();
+        var passwordInput = document.getElementById('auth-password').value.trim();
+
+        if (!correoInput || !passwordInput) {
+            alert("Por favor completa ambos campos para continuar.");
+            return;
+        }
+
+        var correoRegistrado = localStorage.getItem('aetheris_correo_reg');
+        var passwordRegistrada = localStorage.getItem('aetheris_pass_reg');
+
+        if (!correoRegistrado) {
+            localStorage.setItem('aetheris_correo_reg', correoInput);
+            localStorage.setItem('aetheris_pass_reg', passwordInput);
+            localStorage.setItem('aetheris_sesion_activa', 'true');
+            localStorage.setItem('aetheris_nivel', 'Iniciado 🌀');
+            alert("¡Bienvenido por primera vez al Santuario, " + correoInput + "!");
+            iniciarExperienciaPrincipal();
+        } else {
+            if (correoInput === correoRegistrado && passwordInput === passwordRegistrada) {
+                localStorage.setItem('aetheris_sesion_activa', 'true');
+                alert("¡Acceso concedido. Bienvenido de nuevo!");
+                iniciarExperienciaPrincipal();
+            } else {
+                alert("Credenciales incorrectas. Verifica tu correo y contraseña.");
+            }
+        }
+    }
+
+    function iniciarExperienciaPrincipal() {
+        var authView = document.getElementById('auth-view');
+        if (authView) authView.style.display = 'none';
+        if (typeof renderizarFeed === 'function') {
+            renderizarFeed();
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        var sesion = localStorage.getItem('aetheris_sesion_activa');
+        if (sesion === 'true') {
+            iniciarExperienciaPrincipal();
+        }
+    });
+</script> 
 
    <div id="auth-view" class="view active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px;">
     <div style="background: rgba(20, 20, 35, 0.85); border: 1px solid rgba(139, 92, 246, 0.3); padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px);">
