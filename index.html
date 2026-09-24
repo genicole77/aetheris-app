@@ -94,28 +94,51 @@
         return;
     }
 
-    const feedView = document.querySelector('#feed-view');
+  const feedView = document.querySelector('#feed-view');
 
+    // 1. Recuperamos los sueños guardados o inicializamos array vacío
+    let sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
+
+    // 2. Creamos las 3 variaciones visuales del sueño
+    const textoCodificado = encodeURIComponent(textoSueno);
+    const img1 = `https://image.pollinations.ai/prompt/arte%20onirico%20surrealista%20escena%201:${textoCodificado}`;
+    const img2 = `https://image.pollinations.ai/prompt/cinematic%20mood%20surreal%20dream%20scene%202:${textoCodificado}`;
+    const img3 = `https://image.pollinations.ai/prompt/abstract%20cosmic%20vision%20dream%20scene%203:${textoCodificado}`;
+
+    // 3. Objeto del nuevo sueño
+    const nuevoSueño = {
+        texto: textoSueno,
+        imagenes: [img1, img2, img3],
+        fecha: new Date().toLocaleDateString()
+    };
+
+    // 4. Guardamos en localStorage
+    sueñosGuardados.unshift(nuevoSueño);
+    localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
+
+    // 5. Renderizamos la tarjeta con múltiples imágenes
     const nuevaTarjeta = document.createElement('div');
     nuevaTarjeta.className = 'card';
     nuevaTarjeta.style.marginTop = '15px';
 
- // URL generada por IA basada en tu sueño exacto
-    const textoCodificado = encodeURIComponent(textoSueno);
-    const imageUrl = "https://image.pollinations.ai/prompt/arte%20abstracto%20onírico%20y%20surrealista%20que%20evoca%20la%20escena%20de%20un%20sueño%20específica:" + textoCodificado;
-
     nuevaTarjeta.innerHTML = `
         <div class="card-title">✨ Canalización Reciente</div>
         <div class="card-desc">${textoSueno}</div>
-
-        <!-- CONTENEDOR DE LA IMAGEN DEL SUEÑO (Generada por IA) -->
-        <div class="portal-image-container" style="margin-top: 15px; width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid var(--secondary); box-shadow: 0 0 20px rgba(56,189,248, 0.5);">
-            <div id="img-loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--secondary);">✨ Canalizando...</div>
-            <img src="${imageUrl}" alt="Visualización del Sueño" style="width: 100%; height: auto; display: block; object-fit: cover; min-height: 150px;" onload="document.getElementById('img-loading-spinner').style.display='none';">
+        
+        <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary);">
+                <img src="${img1}" alt="Perspectiva 1" style="width: 100%; height: 80px; object-fit: cover; display: block;">
+            </div>
+            <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary);">
+                <img src="${img2}" alt="Perspectiva 2" style="width: 100%; height: 80px; object-fit: cover; display: block;">
+            </div>
+            <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary);">
+                <img src="${img3}" alt="Perspectiva 3" style="width: 100%; height: 80px; object-fit: cover; display: block;">
+            </div>
         </div>
 
         <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Revelación 🌊</span>
+            <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Múltiple Visión 🌀</span>
             <button class="resonar-btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, rgba(139,92,246,0.5), rgba(56,189,248,0.5)); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; cursor: pointer;">Resonar ✨</button>
         </div>
     `;
@@ -123,9 +146,39 @@
     feedView.insertBefore(nuevaTarjeta, feedView.children[1]);
 
     textarea.value = "";
-    switchView('feed', document.querySelectorAll('.nav-item')[0]);
-    alert("Tu sueño ha sido destilado en frecuencia abstracta de forma segura.");
-}
-</script>
-</body>
-</html>
+    document.querySelector('#oraculo-view').style.display = 'none';
+    feedView.style.display = 'block';
+
+   window.addEventListener('DOMContentLoaded', () => {
+    const feedView = document.querySelector('#feed-view');
+    let sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
+    
+    sueñosGuardados.forEach(sueño => {
+        const tarjetaGuardada = document.createElement('div');
+        tarjetaGuardada.className = 'card';
+        tarjetaGuardada.style.marginTop = '15px';
+
+        tarjetaGuardada.innerHTML = `
+            <div class="card-title">✨ Canalización del ${sueño.fecha || 'Reciente'}</div>
+            <div class="card-desc">${sueño.texto}</div>
+            
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary);">
+                    <img src="${sueño.imagenes[0]}" alt="Perspectiva 1" style="width: 100%; height: 80px; object-fit: cover; display: block;">
+                </div>
+                <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary);">
+                    <img src="${sueño.imagenes[1]}" alt="Perspectiva 2" style="width: 100%; height: 80px; object-fit: cover; display: block;">
+                </div>
+                <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary);">
+                    <img src="${sueño.imagenes[2]}" alt="Perspectiva 3" style="width: 100%; height: 80px; object-fit: cover; display: block;">
+                </div>
+            </div>
+
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Múltiple Visión 🌀</span>
+                <button class="resonar-btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, rgba(139,92,246,0.5), rgba(56,189,248,0.5)); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; cursor: pointer;">Resonar ✨</button>
+            </div>
+        `;
+        feedView.appendChild(tarjetaGuardada);
+    });
+});
