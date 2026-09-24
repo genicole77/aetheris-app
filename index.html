@@ -101,53 +101,30 @@
             return;
         }
 
-        var feedView = document.querySelector('#feed-view');
         var sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
-
         var textoLimpio = encodeURIComponent(textoSueno);
         
-        var img1 = "https://image.pollinations.ai/prompt/surreal%20art%20cinematic%20" + textoLimpio + "?seed=111&n=1&width=512&height=512";
-        var img2 = "https://image.pollinations.ai/prompt/dreamscape%20abstract%20vision%20" + textoLimpio + "?seed=222&n=2&width=512&height=512";
-        var img3 = "https://image.pollinations.ai/prompt/mystical%20atmosphere%20" + textoLimpio + "?seed=333&n=3&width=512&height=512";
+        // Semillas y variaciones basadas enteramente en el texto del sueño actual para que cambien siempre
+        var rand1 = Math.floor(Math.random() * 9999);
+        var rand2 = Math.floor(Math.random() * 9999);
+        var rand3 = Math.floor(Math.random() * 9999);
+
+        var img1 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20cinematic%20surreal%20vision?seed=" + rand1 + "&width=512&height=512";
+        var img2 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20mystical%20dreamscape%20art?seed=" + rand2 + "&width=512&height=512";
+        var img3 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20deep%20subconscious%20atmosphere?seed=" + rand3 + "&width=512&height=512";
 
         var nuevoSueño = {
+            id: 'sueno_' + Date.now(),
             texto: textoSueno,
             imagenes: [img1, img2, img3],
+            video: "", 
             fecha: new Date().toLocaleDateString()
         };
 
         sueñosGuardados.unshift(nuevoSueño);
         localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
 
-        var nuevaTarjeta = document.createElement('div');
-        nuevaTarjeta.className = 'card';
-        nuevaTarjeta.style.marginTop = '15px';
-
-        nuevaTarjeta.innerHTML = 
-            '<div class="card-title">✨ Canalización del ' + nuevoSueño.fecha + '</div>' +
-            '<div class="card-desc">' + nuevoSueño.texto + '</div>' +
-            '<div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">' +
-                '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                    '<img src="' + img1 + '" alt="P1" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
-                '</div>' +
-                '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                    '<img src="' + img2 + '" alt="P2" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
-                '</div>' +
-                '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                    '<img src="' + img3 + '" alt="P3" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
-                '</div>' +
-            '</div>' +
-            '<div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">' +
-                '<span style="font-size: 0.8rem; color: var(--secondary);">Resonancia: Múltiple Visión 🌀</span>' +
-                '<button class="resonar-btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, rgba(139,92,246,0.5), rgba(56,189,248,0.5)); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; cursor: pointer;">Resonar ✨</button>' +
-            '</div>';
-
-        var primerElemento = feedView.querySelector('.card');
-        if (primerElemento) {
-            feedView.insertBefore(nuevaTarjeta, primerElemento);
-        } else {
-            feedView.appendChild(nuevaTarjeta);
-        }
+        renderizarFeed();
 
         textarea.value = "";
         if (window.history.replaceState) {
@@ -157,34 +134,62 @@
         switchView('feed', document.querySelector('.nav-item'));
     }
 
-    window.addEventListener('DOMContentLoaded', function() {
+    function renderizarFeed() {
         var feedView = document.querySelector('#feed-view');
-        var sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
+        if (!feedView) return;
+
+        var sueñosBrutos = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
         
+        var vistos = new Set();
+        var sueñosGuardados = [];
+        
+        sueñosBrutos.forEach(function(s) {
+            var claveUnica = s.id || s.texto;
+            if (s.texto && !vistos.has(claveUnica)) {
+                vistos.add(claveUnica);
+                sueñosGuardados.push(s);
+            }
+        });
+
+        localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
+        
+        feedView.innerHTML = '';
+
         sueñosGuardados.forEach(function(sueno) {
-            var tarjetaGuardada = document.createElement('div');
-            tarjetaGuardada.className = 'card';
-            tarjetaGuardada.style.marginTop = '15px';
+            var textoEnc = encodeURIComponent(sueno.texto || "");
+            
+            // Si el sueño ya tiene sus imágenes personalizadas las usa, si son viejas las regenera ajustadas al texto
+            var imgs = sueno.imagenes;
+            if (!imgs || imgs.length !== 3 || imgs[0].includes('undefined')) {
+                imgs = [
+                    "https://image.pollinations.ai/prompt/" + textoEnc + "%20cinematic%20surreal%20vision?seed=11&width=512&height=512",
+                    "https://image.pollinations.ai/prompt/" + textoEnc + "%20mystical%20dreamscape%20art?seed=22&width=512&height=512",
+                    "https://image.pollinations.ai/prompt/" + textoEnc + "%20deep%20subconscious%20atmosphere?seed=33&width=512&height=512"
+                ];
+            }
 
-            // Por seguridad, si una tarjeta vieja guardó imágenes vacías o inválidas, regeneramos las URLs por defecto
-            var imgs = sueno.imagenes && sueno.imagenes.length === 3 ? sueno.imagenes : [
-                "https://image.pollinations.ai/prompt/surreal%20art%20cinematic%20" + encodeURIComponent(sueno.texto) + "?seed=111&n=1&width=512&height=512",
-                "https://image.pollinations.ai/prompt/dreamscape%20abstract%20vision%20" + encodeURIComponent(sueno.texto) + "?seed=222&n=2&width=512&height=512",
-                "https://image.pollinations.ai/prompt/mystical%20atmosphere%20" + encodeURIComponent(sueno.texto) + "?seed=333&n=3&width=512&height=512"
-            ];
+            var tarjeta = document.createElement('div');
+            tarjeta.className = 'card';
+            tarjeta.style.marginTop = '15px';
 
-            tarjetaGuardada.innerHTML = 
+            var seccionVideo = sueno.video ? 
+                '<div style="margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: #000;">' +
+                    '<video controls style="width: 100%; display: block; max-height: 200px;" src="' + sueno.video + '"></video>' +
+                '</div>' : '';
+
+            tarjeta.innerHTML = 
                 '<div class="card-title">✨ Canalización del ' + (sueno.fecha || 'Reciente') + '</div>' +
-                '<div class="card-desc">' + sueno.texto + '</div>' +
+                '<div class="card-desc" style="word-break: break-word;">' + sueno.texto + '</div>' +
+                seccionVideo +
                 '<div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">' +
-                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                        '<img src="' + imgs[0] + '" alt="P1" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
+                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1;">' +
+                        '<img src="' + imgs[0] + '" alt="P1" loading="lazy" onerror="this.src=\'https://image.pollinations.ai/prompt/' + textoEnc + '?seed=1&width=512&height=512\'" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
                     '</div>' +
-                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                        '<img src="' + imgs[1] + '" alt="P2" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
+                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1;">' +
+                        '<img src="' + imgs[1] + '" alt="P2" loading="lazy" onerror="this.src=\'https://image.pollinations.ai/prompt/' + textoEnc + '?seed=2&width=512&height=512\'" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
                     '</div>' +
-                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                        '<img src="' + imgs[2] + '" alt="P3" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
+                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1;">' +
+                        '<img src="' + imgs[2] + '" alt="P3" loading="lazy" onerror="this.src=\'https://image.pollinations.ai/prompt/' + textoEnc + '?seed=3&width=512&height=512\'" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
                     '</div>' +
                 '</div>' +
                 '<div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">' +
@@ -192,7 +197,11 @@
                     '<button class="resonar-btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, rgba(139,92,246,0.5), rgba(56,189,248,0.5)); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; cursor: pointer;">Resonar ✨</button>' +
                 '</div>';
             
-            feedView.appendChild(tarjetaGuardada);
+            feedView.appendChild(tarjeta);
         });
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        renderizarFeed();
     });
 </script>
