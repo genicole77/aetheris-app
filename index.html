@@ -106,9 +106,9 @@
 
         var textoLimpio = encodeURIComponent(textoSueno);
         
-        var img1 = "https://image.pollinations.ai/prompt/surreal%20art%20cinematic%20" + textoLimpio + "?seed=101&n=1";
-        var img2 = "https://image.pollinations.ai/prompt/dreamscape%20abstract%20vision%20" + textoLimpio + "?seed=202&n=2";
-        var img3 = "https://image.pollinations.ai/prompt/mystical%20atmosphere%20" + textoLimpio + "?seed=303&n=3";
+        var img1 = "https://image.pollinations.ai/prompt/surreal%20art%20cinematic%20" + textoLimpio + "?seed=111&n=1&width=512&height=512";
+        var img2 = "https://image.pollinations.ai/prompt/dreamscape%20abstract%20vision%20" + textoLimpio + "?seed=222&n=2&width=512&height=512";
+        var img3 = "https://image.pollinations.ai/prompt/mystical%20atmosphere%20" + textoLimpio + "?seed=333&n=3&width=512&height=512";
 
         var nuevoSueño = {
             texto: textoSueno,
@@ -166,18 +166,25 @@
             tarjetaGuardada.className = 'card';
             tarjetaGuardada.style.marginTop = '15px';
 
+            // Por seguridad, si una tarjeta vieja guardó imágenes vacías o inválidas, regeneramos las URLs por defecto
+            var imgs = sueno.imagenes && sueno.imagenes.length === 3 ? sueno.imagenes : [
+                "https://image.pollinations.ai/prompt/surreal%20art%20cinematic%20" + encodeURIComponent(sueno.texto) + "?seed=111&n=1&width=512&height=512",
+                "https://image.pollinations.ai/prompt/dreamscape%20abstract%20vision%20" + encodeURIComponent(sueno.texto) + "?seed=222&n=2&width=512&height=512",
+                "https://image.pollinations.ai/prompt/mystical%20atmosphere%20" + encodeURIComponent(sueno.texto) + "?seed=333&n=3&width=512&height=512"
+            ];
+
             tarjetaGuardada.innerHTML = 
                 '<div class="card-title">✨ Canalización del ' + (sueno.fecha || 'Reciente') + '</div>' +
                 '<div class="card-desc">' + sueno.texto + '</div>' +
                 '<div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">' +
                     '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                        '<img src="' + sueno.imagenes[0] + '" alt="P1" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
+                        '<img src="' + imgs[0] + '" alt="P1" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
                     '</div>' +
                     '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                        '<img src="' + sueno.imagenes[1] + '" alt="P2" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
+                        '<img src="' + imgs[1] + '" alt="P2" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
                     '</div>' +
                     '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05);">' +
-                        '<img src="' + sueno.imagenes[2] + '" alt="P3" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
+                        '<img src="' + imgs[2] + '" alt="P3" loading="lazy" style="width: 100%; height: 80px; object-fit: cover; display: block;">' +
                     '</div>' +
                 '</div>' +
                 '<div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">' +
