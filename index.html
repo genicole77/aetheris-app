@@ -96,11 +96,12 @@
         const feedView = document.querySelector('#feed-view');
         let sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
 
-        // Codificación ultra segura para que la IA entienda el texto completo
         const textoLimpio = encodeURIComponent(textoSueno);
-        const img1 = `https://image.pollinations.ai/prompt/surreal%20art%20cinematic%20${textoLimpio}?n=1`;
-        const img2 = `https://image.pollinations.ai/prompt/dreamscape%20abstract%20vision%20${textoLimpio}?n=2`;
-        const img3 = `https://image.pollinations.ai/prompt/mystical%20atmosphere%20${textoLimpio}?n=3`;
+        
+        // Generación de las 3 obras visuales estables
+        const img1 = `https://image.pollinations.ai/prompt/surreal%20art%20cinematic%20${textoLimpio}?seed=101&n=1`;
+        const img2 = `https://image.pollinations.ai/prompt/dreamscape%20abstract%20vision%20${textoLimpio}?seed=202&n=2`;
+        const img3 = `https://image.pollinations.ai/prompt/mystical%20atmosphere%20${textoLimpio}?seed=303&n=3`;
 
         const nuevoSueño = {
             texto: textoSueno,
@@ -108,6 +109,7 @@
             fecha: new Date().toLocaleDateString()
         };
 
+        // Guardar permanentemente en la memoria local
         sueñosGuardados.unshift(nuevoSueño);
         localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
 
@@ -135,16 +137,25 @@
             </div>
         `;
 
-        feedView.insertBefore(nuevaTarjeta, feedView.children[1]);
+        // Insertar al principio del feed
+        const primerElemento = feedView.querySelector('.card');
+        if (primerElemento) {
+            feedView.insertBefore(nuevaTarjeta, primerElemento);
+        } else {
+            feedView.appendChild(nuevaTarjeta);
+        }
+
+        // Limpiar formulario y prevenir duplicados al refrescar
         textarea.value = "";
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
         
-        // Redirigir suavemente al Feed para ver el resultado creado
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        feedView.classList.add('active');
-        document.querySelector('.nav-item').classList.add('active');
+        // Ir a la vista Feed de forma fluida
+        switchView('feed', document.querySelector('.nav-item'));
     }
 
+    // Cargar la memoria de sueños y obras al abrir la app
     window.addEventListener('DOMContentLoaded', () => {
         const feedView = document.querySelector('#feed-view');
         let sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
