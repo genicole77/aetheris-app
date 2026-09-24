@@ -96,66 +96,68 @@
         }
     }
 
-    // Función para abrir el Diario Secreto desde el Santuario
     function abrirDiarioSecreto() {
         var diarioView = document.getElementById('diario-view');
         if (diarioView) {
             switchView('diario');
         } else {
-            // Si la vista de diario comparte espacio o usa el feed privado
             switchView('feed');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
-    // Sistema de Lightbox para ver en grande y descargar con autorización
+    // Lightbox optimizado para PC y Móvil sin pasos molestos
     function abrirLightbox(tipo, recursoSrc, textoAsociado) {
         var overlayOld = document.getElementById('aetheris-lightbox-overlay');
         if (overlayOld) overlayOld.remove();
 
         var overlay = document.createElement('div');
         overlay.id = 'aetheris-lightbox-overlay';
-        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;';
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.92); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;';
 
         var contenidoHTML = '';
         if (tipo === 'video') {
-            contenidoHTML = '<video controls autoplay style="max-width: 90%; max-height: 70vh; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);" src="' + recursoSrc + '"></video>';
+            contenidoHTML = '<video controls autoplay style="max-width: 90%; max-height: 65vh; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);" src="' + recursoSrc + '"></video>';
         } else {
-            contenidoHTML = '<img src="' + recursoSrc + '" style="max-width: 90%; max-height: 70vh; border-radius: 12px; object-fit: contain; border: 1px solid rgba(255,255,255,0.2);" alt="Visión Expandida">';
+            contenidoHTML = '<img src="' + recursoSrc + '" style="max-width: 90vw; max-height: 65vh; border-radius: 12px; object-fit: contain; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5);" alt="Visión Expandida">';
         }
 
         overlay.innerHTML = 
-            '<div style="position: absolute; top: 20px; right: 25px; font-size: 2rem; color: white; cursor: pointer;" onclick="document.getElementById(\'aetheris-lightbox-overlay\').remove()">&times;</div>' +
-            '<div style="color: var(--secondary); margin-bottom: 15px; text-align: center; font-size: 0.9rem; max-width: 600px;">' + (textoAsociado || 'Canalización Aetheris') + '</div>' +
+            '<div style="position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: white; cursor: pointer; z-index: 100000;" onclick="document.getElementById(\'aetheris-lightbox-overlay\'].remove()">&times;</div>' +
+            '<div style="color: var(--secondary); margin-bottom: 15px; text-align: center; font-size: 0.95rem; max-width: 600px; padding: 0 15px;">' + (textoAsociado || 'Canalización Aetheris') + '</div>' +
             contenidoHTML +
-            '<div style="margin-top: 20px; display: flex; gap: 15px;">' +
-                '<button onclick="autorizarYDescargar(\'' + recursoSrc + '\', \'' + tipo + '\')" style="padding: 10px 20px; background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">Descargar (Autorizado) 📥</button>' +
-                '<button onclick="document.getElementById(\'aetheris-lightbox-overlay\').remove()" style="padding: 10px 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; cursor: pointer;">Cerrar ✕</button>' +
+            '<div style="margin-top: 25px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">' +
+                '<button id="btn-descarga-directa" style="padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(139,92,246,0.4);">Descargar Imagen 📥</button>' +
+                '<button onclick="document.getElementById(\'aetheris-lightbox-overlay\').remove()" style="padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; cursor: pointer; font-size: 0.95rem;">Cerrar ✕</button>' +
             '</div>';
 
         document.body.appendChild(overlay);
-    }
 
-    function autorizarYDescargar(url, tipo) {
-        var autorizacion = confirm("¿Deseas conceder autorización para descargar este archivo multimedia del Santuario?");
-        if (!autorizacion) return;
-
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = tipo === 'video' ? 'Aetheris_Video_Canalizacion.mp4' : 'Aetheris_Vision_Subconciente.jpg';
-        // Para URLs externas de imágenes, forzamos apertura o descarga directa
-        a.target = '_blank';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Descarga directa limpia usando fetch para evitar bloqueos del navegador en PC
+        document.getElementById('btn-descarga-directa').onclick = function() {
+            fetch(recursoSrc)
+                .then(response => response.blob())
+                .then(blob => {
+                    var blobUrl = window.URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = 'Aetheris_Vision_' + Date.now() + '.jpg';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(blobUrl);
+                })
+                .catch(err => {
+                    // Plan B si el navegador bloquea el blob por CORS
+                    window.open(recursoSrc, '_blank');
+                });
+        };
     }
 
     function transformarSueno() {
         var textarea = document.querySelector('#create-view textarea');
         var textoSueno = textarea ? textarea.value.trim() : "";
-        var inputVideo = document.querySelector('#create-view input[type="url"], #input-video');
-        var urlVideo = inputVideo ? inputVideo.value.trim() : "";
-
+        
         if (!textoSueno) {
             alert("Por favor escribe tu sueño o pensamiento primero.");
             return;
@@ -176,7 +178,7 @@
             id: 'sueno_' + Date.now(),
             texto: textoSueno,
             imagenes: [img1, img2, img3],
-            video: urlVideo, 
+            video: "", 
             fecha: new Date().toLocaleDateString()
         };
 
@@ -186,7 +188,6 @@
         renderizarFeed();
 
         textarea.value = "";
-        if (inputVideo) inputVideo.value = "";
         
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
@@ -233,10 +234,10 @@
             tarjeta.className = 'card';
             tarjeta.style.marginTop = '15px';
 
-            // Si no hay video, no se muestra nada para evitar espacios vacíos o grises
-            var seccionVideo = sueno.video ? 
-                '<div style="margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: #000; cursor: pointer;" onclick="abrirLightbox(\'video\', \'' + sueno.video + '\', \'' + textoPlanoEscapado + '\')">' +
-                    '<video style="width: 100%; display: block; max-height: 200px; pointer-events: none;" src="' + sueno.video + '"></video>' +
+            // Si no hay video, no se genera ningún espacio ni contenedor de video
+            var seccionVideo = (sueno.video && sueno.video.trim() !== "") ? 
+                '<div style="margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: #000; cursor: pointer;">' +
+                    '<video style="width: 100%; display: block; max-height: 200px;" src="' + sueno.video + '"></video>' +
                 '</div>' : '';
 
             tarjeta.innerHTML = 
@@ -244,14 +245,14 @@
                 '<div class="card-desc" style="word-break: break-word;">' + sueno.texto + '</div>' +
                 seccionVideo +
                 '<div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">' +
-                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1; cursor: pointer;" onclick="abrirLightbox(\'imagen\', \'' + imgs[0] + '\', \'' + textoPlanoEscapado + '\')">' +
-                        '<img src="' + imgs[0] + '" alt="P1" loading="lazy" onerror="this.src=\'https://image.pollinations.ai/prompt/' + textoEnc + '?seed=1&width=512&height=512\'" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
+                    '<div class="img-container-Aetheris" style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1; cursor: pointer;">' +
+                        '<img src="' + imgs[0] + '" alt="P1" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;">' +
                     '</div>' +
-                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1; cursor: pointer;" onclick="abrirLightbox(\'imagen\', \'' + imgs[1] + '\', \'' + textoPlanoEscapado + '\')">' +
-                        '<img src="' + imgs[1] + '" alt="P2" loading="lazy" onerror="this.src=\'https://image.pollinations.ai/prompt/' + textoEnc + '?seed=2&width=512&height=512\'" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
+                    '<div class="img-container-Aetheris" style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1; cursor: pointer;">' +
+                        '<img src="' + imgs[1] + '" alt="P2" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;">' +
                     '</div>' +
-                    '<div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1; cursor: pointer;" onclick="abrirLightbox(\'imagen\', \'' + imgs[2] + '\', \'' + textoPlanoEscapado + '\')">' +
-                        '<img src="' + imgs[2] + '" alt="P3" loading="lazy" onerror="this.src=\'https://image.pollinations.ai/prompt/' + textoEnc + '?seed=3&width=512&height=512\'" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
+                    '<div class="img-container-Aetheris" style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1; cursor: pointer;">' +
+                        '<img src="' + imgs[2] + '" alt="P3" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;">' +
                     '</div>' +
                 '</div>' +
                 '<div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">' +
@@ -260,13 +261,21 @@
                 '</div>';
             
             feedView.appendChild(tarjeta);
+
+            // Asignar eventos de clic de forma limpia a cada miniatura para la PC y móvil
+            var contenedoresImg = tarjeta.querySelectorAll('.img-container-Aetheris');
+            contenedoresImg.forEach(function(cont, idx) {
+                cont.onclick = function(e) {
+                    e.stopPropagation();
+                    abrirLightbox('imagen', imgs[idx], sueno.texto);
+                };
+            });
         });
     }
 
     window.addEventListener('DOMContentLoaded', function() {
         renderizarFeed();
         
-        // Asignar evento al botón "Ver mi Diario Secreto" del Santuario
         var botonesDiario = document.querySelectorAll('button, .diario-btn');
         botonesDiario.forEach(function(btn) {
             if (btn.textContent.includes('Diario') || btn.textContent.includes('Santuario')) {
