@@ -71,7 +71,43 @@
   </nav>
 
 <script>
+    // --- SISTEMA DE SEGURIDAD Y ACCESO (REGISTRO / CONTRASEÑA) ---
+    function verificarAcceso(accionCallback) {
+        var passwordRegistrada = localStorage.getItem('aetheris_password');
+        
+        if (!passwordRegistrada) {
+            // Primer ingreso: Registrar contraseña
+            var nuevaPass = prompt("🔐 Configura tu contraseña secreta para activar los poderes de Aetheris (Escribir y Subir Fotos):");
+            if (nuevaPass && nuevaPass.trim() !== "") {
+                localStorage.setItem('aetheris_password', nuevaPass.trim());
+                alert("¡Contraseña configurada con éxito! Tus poderes han sido desbloqueados.");
+                if (accionCallback) accionCallback();
+            } else {
+                alert("Se requiere una contraseña para acceder a estas funciones.");
+            }
+        } else {
+            // Ya registrada: Pedir contraseña
+            var ingresoPass = prompt("🔑 Ingresa tu contraseña secreta de Aetheris:");
+            if (ingresoPass === passwordRegistrada) {
+                if (accionCallback) accionCallback();
+            } else {
+                alert("Contraseña incorrecta. Acceso denegado.");
+            }
+        }
+    }
+
     function switchView(viewName, element) {
+        // Si intentan entrar a crear o al diario, pedimos seguridad
+        if (viewName === 'create' || viewName === 'diario' || viewName === 'sanctuary') {
+            verificarAcceso(function() {
+                ejecutarCambioDeVista(viewName, element);
+            });
+            return;
+        }
+        ejecutarCambioDeVista(viewName, element);
+    }
+
+    function ejecutarCambioDeVista(viewName, element) {
         document.querySelectorAll('.view').forEach(function(v) {
             v.classList.remove('active');
         });
@@ -82,7 +118,8 @@
         if (viewName === 'feed') {
             document.getElementById('feed-view').classList.add('active');
         } else if (viewName === 'create') {
-            document.getElementById('create-view').classList.add('active');
+            var createView = document.getElementById('create-view');
+            if (createView) createView.classList.add('active');
         } else if (viewName === 'sanctuary') {
             var sanctuaryView = document.getElementById('sanctuary-view');
             if (sanctuaryView) sanctuaryView.classList.add('active');
@@ -97,16 +134,18 @@
     }
 
     function abrirDiarioSecreto() {
-        var diarioView = document.getElementById('diario-view');
-        if (diarioView) {
-            switchView('diario');
-        } else {
-            switchView('feed');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        verificarAcceso(function() {
+            var diarioView = document.getElementById('diario-view');
+            if (diarioView) {
+                ejecutarCambioDeVista('diario');
+            } else {
+                ejecutarCambioDeVista('feed');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
     }
 
-    // Lightbox adaptado: Descarga directa en móvil y apertura limpia en PC
+    // --- LIGHTBOX Y DESCARGAS ADAPTADAS (Móvil vs PC) ---
     function abrirLightbox(tipo, recursoSrc, textoAsociado) {
         var overlayOld = document.getElementById('aetheris-lightbox-overlay');
         if (overlayOld) overlayOld.remove();
@@ -123,89 +162,88 @@
         }
 
         overlay.innerHTML = 
-            '<div style="position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: white; cursor: pointer; z-index: 100000;" onclick="document.getElementById(\'aetheris-lightbox-overlay\'].remove()">&times;</div>' +
+            '<div style="position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: white; cursor: pointer; z-index: 100000;" onclick="document.getElementById(\'aetheris-lightbox-overlay\').remove()">&times;</div>' +
             '<div style="color: var(--secondary); margin-bottom: 15px; text-align: center; font-size: 0.95rem; max-width: 600px; padding: 0 15px;">' + (textoAsociado || 'Canalización Aetheris') + '</div>' +
             contenidoHTML +
             '<div style="margin-top: 25px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">' +
                 '<button id="btn-descarga-directa" style="padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(139,92,246,0.4);">Descargar / Guardar 📥</button>' +
-                '<button onclick="document.getElementById(\'aetheris-lightbox-overlay\'].remove()" style="padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; cursor: pointer; font-size: 0.95rem;">Cerrar ✕</button>' +
+                '<button onclick="document.getElementById(\'aetheris-lightbox-overlay\').remove()" style="padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; cursor: pointer; font-size: 0.95rem;">Cerrar ✕</button>' +
             '</div>';
 
         document.body.appendChild(overlay);
 
         document.getElementById('btn-descarga-directa').onclick = function() {
-            // Si es una imagen subida por el usuario (base64) o enlace externo
-            if (recursoSrc.startsWith('data:')) {
+            var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (esMovil || recursoSrc.startsWith('data:')) {
+                // En teléfono descarga al toque
                 var a = document.createElement('a');
                 a.href = recursoSrc;
-                a.download = 'Aetheris_Vision_Personal_' + Date.now() + '.jpg';
+                a.download = 'Aetheris_Vision_' + Date.now() + '.jpg';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
             } else {
-                // En PC o enlaces externos, abrir en pestaña para guardar sin restricciones del navegador
+                // En PC abre pestaña limpia para guardar sin bloqueos CORS
                 window.open(recursoSrc, '_blank');
             }
         };
     }
 
+    // --- CREACIÓN DE SUEÑOS CON FOTO PROPIA ---
     function transformarSueno() {
-        var textarea = document.querySelector('#create-view textarea');
-        var textoSueno = textarea ? textarea.value.trim() : "";
-        
-        if (!textoSueno) {
-            alert("Por favor escribe tu sueño o pensamiento primero.");
-            return;
-        }
-
-        var inputArchivo = document.querySelector('#input-foto-personal');
-        
-        // Función para procesar y guardar el sueño (con o sin foto propia)
-        function guardarConImagen(imgPersonal) {
-            var sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
-            var textoLimpio = encodeURIComponent(textoSueno);
+        verificarAcceso(function() {
+            var textarea = document.querySelector('#create-view textarea');
+            var textoSueno = textarea ? textarea.value.trim() : "";
             
-            var rand1 = Math.floor(Math.random() * 9999);
-            var rand2 = Math.floor(Math.random() * 9999);
-            var rand3 = Math.floor(Math.random() * 9999);
-
-            var img1 = imgPersonal || ("https://image.pollinations.ai/prompt/" + textoLimpio + "%20cinematic%20surreal%20vision?seed=" + rand1 + "&width=512&height=512");
-            var img2 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20mystical%20dreamscape%20art?seed=" + rand2 + "&width=512&height=512";
-            var img3 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20deep%20subconscious%20atmosphere?seed=" + rand3 + "&width=512&height=512";
-
-            var nuevoSueño = {
-                id: 'sueno_' + Date.now(),
-                texto: textoSueno,
-                imagenes: [img1, img2, img3],
-                video: "", 
-                fecha: new Date().toLocaleDateString()
-            };
-
-            sueñosGuardados.unshift(nuevoSueño);
-            localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
-
-            renderizarFeed();
-
-            textarea.value = "";
-            if (inputArchivo) inputArchivo.value = "";
-            
-            if (window.history.replaceState) {
-                window.history.replaceState(null, null, window.location.href);
+            if (!textoSueno) {
+                alert("Por favor escribe tu sueño o pensamiento primero.");
+                return;
             }
-            
-            switchView('feed', document.querySelector('.nav-item'));
-        }
 
-        // Si el usuario seleccionó una foto propia, la convertimos a Base64
-        if (inputArchivo && inputArchivo.files && inputArchivo.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                guardarConImagen(e.target.result);
-            };
-            reader.readAsDataURL(inputArchivo.files[0]);
-        } else {
-            guardarConImagen(null);
-        }
+            var inputArchivo = document.querySelector('#input-foto-personal');
+            
+            function guardarConImagen(imgPersonal) {
+                var sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
+                var textoLimpio = encodeURIComponent(textoSueno);
+                
+                var rand1 = Math.floor(Math.random() * 9999);
+                var rand2 = Math.floor(Math.random() * 9999);
+                var rand3 = Math.floor(Math.random() * 9999);
+
+                var img1 = imgPersonal || ("https://image.pollinations.ai/prompt/" + textoLimpio + "%20cinematic%20surreal%20vision?seed=" + rand1 + "&width=512&height=512");
+                var img2 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20mystical%20dreamscape%20art?seed=" + rand2 + "&width=512&height=512";
+                var img3 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20deep%20subconscious%20atmosphere?seed=" + rand3 + "&width=512&height=512";
+
+                var nuevoSueño = {
+                    id: 'sueno_' + Date.now(),
+                    texto: textoSueno,
+                    imagenes: [img1, img2, img3],
+                    video: "", 
+                    fecha: new Date().toLocaleDateString()
+                };
+
+                sueñosGuardados.unshift(nuevoSueño);
+                localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
+
+                renderizarFeed();
+
+                textarea.value = "";
+                if (inputArchivo) inputArchivo.value = "";
+                
+                ejecutarCambioDeVista('feed', document.querySelector('.nav-item'));
+            }
+
+            if (inputArchivo && inputArchivo.files && inputArchivo.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    guardarConImagen(e.target.result);
+                };
+                reader.readAsDataURL(inputArchivo.files[0]);
+            } else {
+                guardarConImagen(null);
+            }
+        });
     }
 
     function renderizarFeed() {
@@ -213,7 +251,6 @@
         if (!feedView) return;
 
         var sueñosBrutos = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
-        
         var vistos = new Set();
         var sueñosGuardados = [];
         
@@ -226,14 +263,12 @@
         });
 
         localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
-        
         feedView.innerHTML = '';
 
         sueñosGuardados.forEach(function(sueno) {
             var textoEnc = encodeURIComponent(sueno.texto || "");
-            var textoPlanoEscapado = (sueno.texto || "").replace(/'/g, "\\'");
-            
             var imgs = sueno.imagenes;
+            
             if (!imgs || imgs.length !== 3 || imgs[0].includes('undefined')) {
                 imgs = [
                     "https://image.pollinations.ai/prompt/" + textoEnc + "%20cinematic%20surreal%20vision?seed=11&width=512&height=512",
@@ -280,7 +315,7 @@
     window.addEventListener('DOMContentLoaded', function() {
         renderizarFeed();
         
-        // Inyectar automáticamente el selector de foto propia en la vista de creación si existe
+        // Asegurar que el input de foto propia esté visible permanentemente en el HTML de creación
         var createView = document.querySelector('#create-view');
         if (createView && !document.getElementById('input-foto-personal')) {
             var divUpload = document.createElement('div');
