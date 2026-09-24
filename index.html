@@ -94,9 +94,9 @@
         return;
     }
 
-    const feedView = document.querySelector('#feed-view');
-    if (feedView) {
-       const nuevaTarjeta = document.createElement('div');
+   const feedView = document.querySelector('#feed-view');
+
+        const nuevaTarjeta = document.createElement('div');
         nuevaTarjeta.className = 'card';
         nuevaTarjeta.style.marginTop = '15px';
 
@@ -122,8 +122,6 @@
         textarea.value = "";
         switchView('feed', document.querySelectorAll('.nav-item')[0]);
         alert("Tu sueño ha sido destilado en frecuencia abstracta de forma segura.");
-    }
-
 </script>
 </body>
 </html>
