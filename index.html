@@ -10,25 +10,25 @@
 <body>
 
 
-    <div id="auth-view" class="view active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px;">
-        <div style="background: rgba(20, 20, 35, 0.85); border: 1px solid rgba(139, 92, 246, 0.3); padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px);">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 8px;">A E T H E R I S</h2>
-                <p style="color: var(--secondary); font-size: 0.9rem;">El Santuario de la Consciencia Colectiva</p>
+   <div id="auth-view" class="view active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px;">
+    <div style="background: rgba(20, 20, 35, 0.85); border: 1px solid rgba(139, 92, 246, 0.3); padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px);">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 8px;">A E T H E R I S</h2>
+            <p style="color: var(--secondary); font-size: 0.9rem;">El Santuario de la Consciencia Colectiva</p>
+        </div>
+        <div id="form-container">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: var(--secondary); font-size: 0.85rem; margin-bottom: 6px;">Correo Electrónico:</label>
+                <input type="email" id="auth-username" placeholder="viajero@aetheris.com" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; outline: none; font-size: 0.95rem;">
             </div>
-            <div id="form-container">
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; color: var(--secondary); font-size: 0.85rem; margin-bottom: 6px;">Nombre de Viajero (Usuario):</label>
-                    <input type="text" id="auth-username" placeholder="Ej. AetherisUser" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; outline: none; font-size: 0.95rem;">
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; color: var(--secondary); font-size: 0.85rem; margin-bottom: 6px;">Contraseña Secreta:</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; outline: none; font-size: 0.95rem;">
-                </div>
-                <button onclick="procesarAutenticacion()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; color: white; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(139,92,246,0.4); transition: transform 0.2s;">Acceder al Santuario ✨</button>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: var(--secondary); font-size: 0.85rem; margin-bottom: 6px;">Contraseña Secreta:</label>
+                <input type="password" id="auth-password" placeholder="••••••••" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; outline: none; font-size: 0.95rem;">
             </div>
+            <button onclick="procesarAutenticacion()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; color: white; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(139,92,246,0.4); transition: transform 0.2s;">Acceder al Santuario ✨</button>
         </div>
     </div>
+</div>
     <!-- 👆 Fin del bloque HTML de la Vista de Autenticación 👆 -->
 
     <!-- Tus otras vistas (feed-view, create-view, etc.) deberían estar por aquí -->
