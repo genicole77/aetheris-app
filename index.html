@@ -85,6 +85,10 @@
             document.getElementById('create-view').classList.add('active');
         } else if (viewName === 'sanctuary') {
             document.getElementById('sanctuary-view').classList.add('active');
+        } else if (viewName === 'diario') {
+            // Vista de Diario Secreto integrada
+            var diarioView = document.getElementById('diario-view');
+            if (diarioView) diarioView.classList.add('active');
         }
         
         if (element) {
@@ -92,9 +96,20 @@
         }
     }
 
+    // Función para activar el botón del Santuario
+    function abrirDiarioSecreto() {
+        // Si tienes una vista específica o quieres filtrar tus propias canalizaciones
+        switchView('feed'); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function transformarSueno() {
         var textarea = document.querySelector('#create-view textarea');
         var textoSueno = textarea ? textarea.value.trim() : "";
+        
+        // Selector opcional por si agregas un campo de video o link en tu vista de creación
+        var inputVideo = document.querySelector('#create-view input[type="url"], #input-video');
+        var urlVideo = inputVideo ? inputVideo.value.trim() : "";
 
         if (!textoSueno) {
             alert("Por favor escribe tu sueño o pensamiento primero.");
@@ -104,7 +119,6 @@
         var sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
         var textoLimpio = encodeURIComponent(textoSueno);
         
-        // Semillas y variaciones basadas enteramente en el texto del sueño actual para que cambien siempre
         var rand1 = Math.floor(Math.random() * 9999);
         var rand2 = Math.floor(Math.random() * 9999);
         var rand3 = Math.floor(Math.random() * 9999);
@@ -117,7 +131,7 @@
             id: 'sueno_' + Date.now(),
             texto: textoSueno,
             imagenes: [img1, img2, img3],
-            video: "", 
+            video: urlVideo, 
             fecha: new Date().toLocaleDateString()
         };
 
@@ -127,6 +141,8 @@
         renderizarFeed();
 
         textarea.value = "";
+        if (inputVideo) inputVideo.value = "";
+        
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
         }
@@ -158,7 +174,6 @@
         sueñosGuardados.forEach(function(sueno) {
             var textoEnc = encodeURIComponent(sueno.texto || "");
             
-            // Si el sueño ya tiene sus imágenes personalizadas las usa, si son viejas las regenera ajustadas al texto
             var imgs = sueno.imagenes;
             if (!imgs || imgs.length !== 3 || imgs[0].includes('undefined')) {
                 imgs = [
@@ -172,9 +187,10 @@
             tarjeta.className = 'card';
             tarjeta.style.marginTop = '15px';
 
+            // Renderizado seguro del video si existe enlace
             var seccionVideo = sueno.video ? 
                 '<div style="margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: #000;">' +
-                    '<video controls style="width: 100%; display: block; max-height: 200px;" src="' + sueno.video + '"></video>' +
+                    '<video controls style="width: 100%; display: block; max-height: 220px;" src="' + sueno.video + '"></video>' +
                 '</div>' : '';
 
             tarjeta.innerHTML = 
@@ -203,5 +219,11 @@
 
     window.addEventListener('DOMContentLoaded', function() {
         renderizarFeed();
+        
+        // Vinculamos el botón del diario en el HTML si existe
+        var btnDiario = document.querySelector('#sanctuary-view button, .diario-btn');
+        if (btnDiario) {
+            btnDiario.setAttribute('onclick', 'abrirDiarioSecreto()');
+        }
     });
 </script>
