@@ -106,7 +106,7 @@
         }
     }
 
-    // Lightbox optimizado para PC y Móvil sin pasos molestos
+    // Lightbox adaptado: Descarga directa en móvil y apertura limpia en PC
     function abrirLightbox(tipo, recursoSrc, textoAsociado) {
         var overlayOld = document.getElementById('aetheris-lightbox-overlay');
         if (overlayOld) overlayOld.remove();
@@ -127,30 +127,25 @@
             '<div style="color: var(--secondary); margin-bottom: 15px; text-align: center; font-size: 0.95rem; max-width: 600px; padding: 0 15px;">' + (textoAsociado || 'Canalización Aetheris') + '</div>' +
             contenidoHTML +
             '<div style="margin-top: 25px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">' +
-                '<button id="btn-descarga-directa" style="padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(139,92,246,0.4);">Descargar Imagen 📥</button>' +
-                '<button onclick="document.getElementById(\'aetheris-lightbox-overlay\').remove()" style="padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; cursor: pointer; font-size: 0.95rem;">Cerrar ✕</button>' +
+                '<button id="btn-descarga-directa" style="padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(139,92,246,0.4);">Descargar / Guardar 📥</button>' +
+                '<button onclick="document.getElementById(\'aetheris-lightbox-overlay\'].remove()" style="padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; cursor: pointer; font-size: 0.95rem;">Cerrar ✕</button>' +
             '</div>';
 
         document.body.appendChild(overlay);
 
-        // Descarga directa limpia usando fetch para evitar bloqueos del navegador en PC
         document.getElementById('btn-descarga-directa').onclick = function() {
-            fetch(recursoSrc)
-                .then(response => response.blob())
-                .then(blob => {
-                    var blobUrl = window.URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.download = 'Aetheris_Vision_' + Date.now() + '.jpg';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(blobUrl);
-                })
-                .catch(err => {
-                    // Plan B si el navegador bloquea el blob por CORS
-                    window.open(recursoSrc, '_blank');
-                });
+            // Si es una imagen subida por el usuario (base64) o enlace externo
+            if (recursoSrc.startsWith('data:')) {
+                var a = document.createElement('a');
+                a.href = recursoSrc;
+                a.download = 'Aetheris_Vision_Personal_' + Date.now() + '.jpg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                // En PC o enlaces externos, abrir en pestaña para guardar sin restricciones del navegador
+                window.open(recursoSrc, '_blank');
+            }
         };
     }
 
@@ -163,37 +158,54 @@
             return;
         }
 
-        var sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
-        var textoLimpio = encodeURIComponent(textoSueno);
+        var inputArchivo = document.querySelector('#input-foto-personal');
         
-        var rand1 = Math.floor(Math.random() * 9999);
-        var rand2 = Math.floor(Math.random() * 9999);
-        var rand3 = Math.floor(Math.random() * 9999);
+        // Función para procesar y guardar el sueño (con o sin foto propia)
+        function guardarConImagen(imgPersonal) {
+            var sueñosGuardados = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
+            var textoLimpio = encodeURIComponent(textoSueno);
+            
+            var rand1 = Math.floor(Math.random() * 9999);
+            var rand2 = Math.floor(Math.random() * 9999);
+            var rand3 = Math.floor(Math.random() * 9999);
 
-        var img1 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20cinematic%20surreal%20vision?seed=" + rand1 + "&width=512&height=512";
-        var img2 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20mystical%20dreamscape%20art?seed=" + rand2 + "&width=512&height=512";
-        var img3 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20deep%20subconscious%20atmosphere?seed=" + rand3 + "&width=512&height=512";
+            var img1 = imgPersonal || ("https://image.pollinations.ai/prompt/" + textoLimpio + "%20cinematic%20surreal%20vision?seed=" + rand1 + "&width=512&height=512");
+            var img2 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20mystical%20dreamscape%20art?seed=" + rand2 + "&width=512&height=512";
+            var img3 = "https://image.pollinations.ai/prompt/" + textoLimpio + "%20deep%20subconscious%20atmosphere?seed=" + rand3 + "&width=512&height=512";
 
-        var nuevoSueño = {
-            id: 'sueno_' + Date.now(),
-            texto: textoSueno,
-            imagenes: [img1, img2, img3],
-            video: "", 
-            fecha: new Date().toLocaleDateString()
-        };
+            var nuevoSueño = {
+                id: 'sueno_' + Date.now(),
+                texto: textoSueno,
+                imagenes: [img1, img2, img3],
+                video: "", 
+                fecha: new Date().toLocaleDateString()
+            };
 
-        sueñosGuardados.unshift(nuevoSueño);
-        localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
+            sueñosGuardados.unshift(nuevoSueño);
+            localStorage.setItem('aetheris_sueños', JSON.stringify(sueñosGuardados));
 
-        renderizarFeed();
+            renderizarFeed();
 
-        textarea.value = "";
-        
-        if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
+            textarea.value = "";
+            if (inputArchivo) inputArchivo.value = "";
+            
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+            
+            switchView('feed', document.querySelector('.nav-item'));
         }
-        
-        switchView('feed', document.querySelector('.nav-item'));
+
+        // Si el usuario seleccionó una foto propia, la convertimos a Base64
+        if (inputArchivo && inputArchivo.files && inputArchivo.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                guardarConImagen(e.target.result);
+            };
+            reader.readAsDataURL(inputArchivo.files[0]);
+        } else {
+            guardarConImagen(null);
+        }
     }
 
     function renderizarFeed() {
@@ -234,16 +246,9 @@
             tarjeta.className = 'card';
             tarjeta.style.marginTop = '15px';
 
-            // Si no hay video, no se genera ningún espacio ni contenedor de video
-            var seccionVideo = (sueno.video && sueno.video.trim() !== "") ? 
-                '<div style="margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: #000; cursor: pointer;">' +
-                    '<video style="width: 100%; display: block; max-height: 200px;" src="' + sueno.video + '"></video>' +
-                '</div>' : '';
-
             tarjeta.innerHTML = 
                 '<div class="card-title">✨ Canalización del ' + (sueno.fecha || 'Reciente') + '</div>' +
                 '<div class="card-desc" style="word-break: break-word;">' + sueno.texto + '</div>' +
-                seccionVideo +
                 '<div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">' +
                     '<div class="img-container-Aetheris" style="border-radius: 8px; overflow: hidden; border: 1px solid var(--secondary); background: rgba(255,255,255,0.05); aspect-ratio: 1; cursor: pointer;">' +
                         '<img src="' + imgs[0] + '" alt="P1" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;">' +
@@ -262,7 +267,6 @@
             
             feedView.appendChild(tarjeta);
 
-            // Asignar eventos de clic de forma limpia a cada miniatura para la PC y móvil
             var contenedoresImg = tarjeta.querySelectorAll('.img-container-Aetheris');
             contenedoresImg.forEach(function(cont, idx) {
                 cont.onclick = function(e) {
@@ -276,6 +280,17 @@
     window.addEventListener('DOMContentLoaded', function() {
         renderizarFeed();
         
+        // Inyectar automáticamente el selector de foto propia en la vista de creación si existe
+        var createView = document.querySelector('#create-view');
+        if (createView && !document.getElementById('input-foto-personal')) {
+            var divUpload = document.createElement('div');
+            divUpload.style.cssText = 'margin-top: 15px; padding: 12px; border: 1px dashed rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.02); text-align: center;';
+            divUpload.innerHTML = 
+                '<label style="display: block; font-size: 0.85rem; color: var(--secondary); margin-bottom: 8px; cursor: pointer;">📸 Adjuntar foto propia para el realismo (Opcional):</label>' +
+                '<input type="file" id="input-foto-personal" accept="image/*" style="font-size: 0.8rem; color: white; width: 100%; cursor: pointer;">';
+            createView.appendChild(divUpload);
+        }
+
         var botonesDiario = document.querySelectorAll('button, .diario-btn');
         botonesDiario.forEach(function(btn) {
             if (btn.textContent.includes('Diario') || btn.textContent.includes('Santuario')) {
