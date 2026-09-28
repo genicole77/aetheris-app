@@ -163,16 +163,25 @@
 
         var passwordRegistrada = localStorage.getItem('aetheris_password');
         
-        if (!passwordRegistrada) {
-            var nuevaPass = prompt("🔐 Configura tu contraseña secreta de Aetheris por primera vez:");
-            if (nuevaPass && nuevaPass.trim() !== "") {
-                localStorage.setItem('aetheris_password', nuevaPass.trim());
-                sessionStorage.setItem('aetheris_sesion_activa', 'true');
-                alert("¡Contraseña configurada y sesión iniciada con éxito!");
-                if (accionCallback) accionCallback();
-            } else {
-                alert("Se requiere una contraseña para continuar.");
+   if (!passwordRegistrada) {
+        var nuevaPass = prompt("🔐 Configura tu contraseña secreta de Aetheris por primera vez:");
+        if (nuevaPass && nuevaPass.trim() !== "") {
+            var confirmarPass = prompt("🔐 Confirma tu contraseña secreta de Aetheris:");
+            
+            if (nuevaPass !== confirmarPass) {
+                alert("⚠️ Las contraseñas no coinciden. Inténtalo de nuevo.");
+                return; // Detiene el proceso si no son iguales
             }
+            
+            localStorage.setItem("aetheris_password", nuevaPass.trim());
+            sessionStorage.setItem("aetheris_sesion_activa", "true");
+            alert("✅ ¡Contraseña configurada y sesión iniciada con éxito!");
+            if (accionCallback) accionCallback();
+        } else {
+            alert("⚠️ Se requiere una contraseña para continuar.");
+        }
+    }
+      
         } else {
             var ingresoPass = prompt("🔑 Ingresa tu contraseña secreta para acceder:");
             if (ingresoPass === passwordRegistrada) {
