@@ -467,9 +467,19 @@
         }
     }
 
-    function iniciarExperienciaPrincipal() {
+ function iniciarExperienciaPrincipal() {
         var authView = document.getElementById('auth-view');
-        if (authView) authView.style.display = 'none';
+        if (authView) {
+            authView.style.display = 'none';
+            authView.classList.remove('active');
+        }
+
+        var feedView = document.getElementById('feed-view');
+        if (feedView) {
+            feedView.style.display = 'block';
+            feedView.classList.add('active');
+        }
+
         if (typeof renderizarFeed === 'function') {
             renderizarFeed();
         }
