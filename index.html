@@ -339,16 +339,15 @@
         var feedView = document.querySelector('#feed-view');
         if (!feedView) return;
 
-// Inyectar botón de cerrar sesión flotante en el feed si no existe
+// Inyectar botón de cerrar sesión flotante absoluto en la ventana
     if (!document.getElementById('btn-salir-feed')) {
         var btnSalir = document.createElement('button');
         btnSalir.id = 'btn-salir-feed';
         btnSalir.innerHTML = '🚪 Salir';
         btnSalir.onclick = cerrarSesionAetheris;
-        btnSalir.style.cssText = 'position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #f87171; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; backdrop-filter: blur(5px); z-index: 100;';
+        btnSalir.style.cssText = 'position: fixed; top: 20px; right: 20px; background: rgba(239, 68, 68, 0.8); border: 1px solid #f87171; color: #ffffff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(5px); z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.5);';
         
-        feedView.style.position = 'relative';
-        feedView.appendChild(btnSalir);
+        document.body.appendChild(btnSalir);
     }
       
         var sueñosBrutos = JSON.parse(localStorage.getItem('aetheris_sueños')) || [];
