@@ -425,11 +425,12 @@
 
 <script>
     function procesarAutenticacion() {
+        var nombreInput = document.getElementById('auth-nombre').value.trim();
         var correoInput = document.getElementById('auth-username').value.trim();
         var passwordInput = document.getElementById('auth-password').value.trim();
 
-        if (!correoInput || !passwordInput) {
-            alert("Por favor completa ambos campos para continuar.");
+        if (!nombreInput || !correoInput || !passwordInput) {
+            alert("Por favor completa todos los campos (Nombre, Correo y Contraseña).");
             return;
         }
 
@@ -441,6 +442,7 @@
 
         if (!usuarioExistente) {
             var nuevoUsuario = {
+                nombre: nombreInput,
                 correo: correoInput,
                 password: passwordInput,
                 nivel: 'Iniciado 🌀'
@@ -449,13 +451,15 @@
             
             localStorage.setItem('aetheris_usuarios', JSON.stringify(usuarios));
             localStorage.setItem('aetheris_sesion_activa', correoInput);
+            localStorage.setItem('aetheris_nombre_activo', nombreInput);
             
-            alert("¡Cuenta creada con éxito! Bienvenido al Santuario, " + correoInput + " ✨");
+            alert("¡Cuenta creada con éxito! Bienvenido al Santuario, " + nombreInput + " ✨");
             iniciarExperienciaPrincipal();
         } else {
             if (usuarioExistente.password === passwordInput) {
                 localStorage.setItem('aetheris_sesion_activa', correoInput);
-                alert("¡Acceso concedido. Bienvenido de nuevo, " + correoInput + "!");
+                localStorage.setItem('aetheris_nombre_activo', usuarioExistente.nombre);
+                alert("¡Acceso concedido. Bienvenido de nuevo, " + usuarioExistente.nombre + "!");
                 iniciarExperienciaPrincipal();
             } else {
                 alert("Contraseña incorrecta para este correo. Verifica tus datos.");
