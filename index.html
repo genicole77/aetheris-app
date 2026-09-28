@@ -485,6 +485,13 @@
         }
     }
 
+function cerrarSesionAetheris() {
+        localStorage.removeItem('aetheris_sesion_activa');
+        localStorage.removeItem('aetheris_nombre_activo');
+        alert("Has salido del Santuario de forma segura. ¡Hasta pronto, Viajero! ✨");
+        window.location.reload();
+    }
+  
     window.addEventListener('DOMContentLoaded', function() {
         var sesionActiva = localStorage.getItem('aetheris_sesion_activa');
         if (sesionActiva) {
