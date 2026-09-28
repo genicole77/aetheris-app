@@ -161,9 +161,9 @@
             return;
         }
 
-        var passwordRegistrada = localStorage.getItem('aetheris_password');
-        
-  if (!passwordRegistrada) {
+      var passwordRegistrada = localStorage.getItem("aetheris_password");
+
+    if (!passwordRegistrada) {
         var nuevaPass = prompt("🔐 Configura tu contraseña secreta de Aetheris por primera vez:");
         if (nuevaPass && nuevaPass.trim() !== "") {
             var confirmarPass = prompt("🔐 Confirma tu contraseña secreta de Aetheris:");
@@ -179,6 +179,15 @@
             if (accionCallback) accionCallback();
         } else {
             alert("⚠️ Se requiere una contraseña para continuar.");
+        }
+    } else {
+        var ingresoPass = prompt("🔑 Ingresa tu contraseña secreta para acceder a Aetheris:");
+        if (ingresoPass === passwordRegistrada) {
+            sessionStorage.setItem("aetheris_sesion_activa", "true");
+            alert("🔓 Acceso concedido. Bienvenido de nuevo.");
+            if (accionCallback) accionCallback();
+        } else {
+            alert("❌ Contraseña incorrecta. Acceso denegado.");
         }
     }
       
