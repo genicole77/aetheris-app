@@ -91,40 +91,55 @@
 <!-- 🖐️ Fin del bloque HTML de la Vista de Autenticación -->
     <!-- ... otros scripts ... -->
 
-    <script>
-    function switchView(viewId) {
+  <script>
+// Función principal para cambiar entre vistas
+function switchView(viewId) {
+    // 1. Ocultar todas las vistas de forma segura
     var views = document.querySelectorAll('.view');
-    views.forEach(function(view) {
-        view.classList.remove('active');
+    views.forEach(function(v) {
+        v.style.display = 'none';
+        v.classList.remove('active');
     });
+
+    // 2. Buscar la vista seleccionada
     var targetView = document.getElementById(viewId);
     if (targetView) {
+        targetView.style.display = 'block';
         targetView.classList.add('active');
+    } else {
+        console.warn("No se encontró la vista con ID: " + viewId);
     }
-}  
-    function procesarAutenticacion() {
-        var nombreInput = document.getElementById("auth-nombre");
-        var emailInput = document.getElementById("auth-username");
-        var passInput = document.getElementById("auth-password");
+}
 
-        var nombre = nombreInput ? nombreInput.value.trim() : "";
-        var email = emailInput ? emailInput.value.trim() : "";
-        var password = passInput ? passInput.value.trim() : "";
+// Función de autenticación
+function procesarAutenticacion() {
+    var nombreInput = document.getElementById("auth-nombre");
+    var emailInput = document.getElementById("auth-username");
+    var passInput = document.getElementById("auth-password");
 
-        if (!nombre || !email || !password) {
-            alert("⚠️ Por favor, completa todos los campos para acceder al Santuario.");
-            return;
-        }
+    var nombre = nombreInput ? nombreInput.value.trim() : "";
+    var email = emailInput ? emailInput.value.trim() : "";
+    var password = passInput ? passInput.value.trim() : "";
 
-        localStorage.setItem("aetheris_nombre", nombre);
-        localStorage.setItem("aetheris_email", email);
-        localStorage.setItem("aetheris_password", password);
-        sessionStorage.setItem("aetheris_sesion_activa", "true");
-
-        alert("✨ ¡Bienvenido al Santuario, " + nombre + "!");
-        location.reload();
+    if (!nombre || !email || !password) {
+        alert("⚠️ Por favor, completa todos los campos para acceder al Santuario.");
+        return;
     }
-    </script>
+
+    localStorage.setItem("aetheris_nombre", nombre);
+    localStorage.setItem("aetheris_email", email);
+    localStorage.setItem("aetheris_password", password);
+    sessionStorage.setItem("aetheris_sesion_activa", "true");
+
+    alert("✨ ¡Bienvenido al Santuario, " + nombre + "!");
+    location.reload();
+}
+
+// Asegurar que al cargar la página la vista inicial responda correctamente
+document.addEventListener("DOMContentLoaded", function() {
+    switchView('feed-view'); // Muestra la vista principal por defecto
+});
+</script> 
   
   <header>
     <h1>A E T H E R I S</h1>
